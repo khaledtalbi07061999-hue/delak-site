@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Delak — La vidéo pour les marques</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%233770EF'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='Arial' font-size='32' font-weight='700' fill='white'%3ED%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#3770EF;
+    --white:#FFFFFF;
+    --line-on-white:rgba(55,112,239,0.18);
+    --line-on-blue:rgba(255,255,255,0.28);
+    --tint:rgba(55,112,239,0.06);
+    --tint2:rgba(55,112,239,0.10);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--white);color:var(--blue);font-family:'Plus Jakarta Sans',sans-serif;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3,.display{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;letter-spacing:-0.035em;margin:0;}
+  p{margin:0;}
+  a{color:inherit;text-decoration:none;}
+  button,input,select{font-family:inherit;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 28px;}
+  @media (max-width:640px){.wrap{padding:0 20px;}}
+
+  .nav{position:sticky;top:0;z-index:50;background:var(--blue);}
+  .nav .wrap{display:flex;align-items:center;justify-content:space-between;padding-top:16px;padding-bottom:16px;}
+  .logo{color:var(--white);font-weight:800;font-size:21px;letter-spacing:-0.02em;}
+  .nav-links{display:flex;gap:22px;align-items:center;}
+  .nav-links a{color:var(--white);font-size:14px;font-weight:500;opacity:0.85;transition:opacity .15s;}
+  .nav-links a:hover{opacity:1;}
+  .nav-cta{background:var(--white);color:var(--blue)!important;opacity:1!important;padding:9px 18px;border-radius:100px;font-size:14px;font-weight:600;}
+  .lang-toggle{display:flex;border:1px solid var(--line-on-blue);border-radius:100px;overflow:hidden;}
+  .lang-toggle button{background:none;border:none;color:var(--white);opacity:0.7;font-size:13px;font-weight:600;padding:7px 12px;cursor:pointer;}
+  .lang-toggle button.active{background:var(--white);color:var(--blue);opacity:1;}
+  @media (max-width:800px){.nav-links a:not(.nav-cta){display:none;}}
+
+  .badge{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--tint2);border:1px solid var(--line-on-white);
+    color:var(--blue);font-size:13px;font-weight:600;
+    padding:7px 14px;border-radius:100px;
+  }
+
+  .hero{background:var(--white);color:var(--blue);padding:64px 0 0;text-align:center;}
+  .hero-inner{max-width:760px;margin:0 auto;}
+  .hero h1{font-size:clamp(34px,5.6vw,60px);line-height:1.04;margin-top:20px;color:var(--blue);}
+  .hero-sub{margin:22px auto 0;font-size:18px;line-height:1.55;opacity:0.72;max-width:52ch;}
+  .hero-actions{margin-top:30px;display:flex;gap:14px;flex-wrap:wrap;justify-content:center;}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 28px;border-radius:100px;font-size:15px;font-weight:600;border:1.5px solid transparent;transition:transform .15s ease, opacity .15s ease;cursor:pointer;background:none;}
+  .btn:hover{transform:translateY(-1px);}
+  .on-white .btn-primary{background:var(--blue);color:var(--white);}
+  .on-white .btn-primary:hover{opacity:0.88;}
+  .on-white .btn-ghost{border-color:var(--blue);color:var(--blue);}
+  .on-white .btn-ghost:hover{background:var(--tint);}
+  .on-blue .btn-primary{background:var(--white);color:var(--blue);}
+  .on-blue .btn-primary:hover{opacity:0.9;}
+  .on-blue .btn-ghost{border-color:var(--line-on-blue);color:var(--white);}
+  .on-blue .btn-ghost:hover{background:rgba(255,255,255,0.1);}
+  .hero-fineprint{margin-top:18px;display:flex;gap:18px;justify-content:center;flex-wrap:wrap;font-size:13px;opacity:0.55;}
+  .hero-cut{margin-top:56px;height:56px;background:var(--white);clip-path:polygon(0 0, 100% 100%, 100% 100%, 0 100%);}
+  @media (max-width:640px){.hero-cut{height:30px;}}
+
+  .marquee-band{background:var(--blue);padding:26px 0 30px;overflow:hidden;}
+  .marquee-label{color:var(--white);opacity:0.7;font-size:13px;font-weight:600;text-align:center;margin-bottom:16px;}
+  .marquee-track{display:flex;width:max-content;animation:scroll 32s linear infinite;align-items:center;}
+  .marquee-track:hover{animation-play-state:paused;}
+  @keyframes scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+  .marquee-item{
+    display:flex;align-items:center;justify-content:center;
+    height:76px;min-width:120px;margin:0 10px;padding:12px 18px;
+    background:#fff;border-radius:16px;flex:none;
+  }
+  .marquee-item img{height:48px;width:auto;max-width:168px;object-fit:contain;display:block;}
+  .marquee-item img.logo-wide{height:40px;max-width:280px;}
+
+  .section{padding:92px 0;}
+  .section-tight{padding:66px 0;}
+  .section-head{max-width:640px;}
+  .section-head.center{max-width:640px;margin:0 auto;text-align:center;}
+  .kicker{font-size:14px;font-weight:600;opacity:0.6;}
+  .section h2{font-size:clamp(28px,3.6vw,40px);line-height:1.1;margin-top:12px;}
+  .section-lede{margin-top:14px;font-size:16.5px;line-height:1.6;opacity:0.72;}
+
+  .film{margin-top:36px;overflow:hidden;}
+  .film-track{display:flex;gap:16px;width:max-content;animation:scroll var(--dur, 48s) linear infinite;padding:2px 0 8px;}
+  .film-track:hover{animation-play-state:paused;}
+  .phone-item{flex:none;display:flex;flex-direction:column;align-items:center;gap:10px;}
+  .phone{
+    position:relative;flex:none;height:min(440px, 54vh);aspect-ratio:9/16;width:auto;
+    border-radius:22px;overflow:hidden;background:#101828;
+  }
+  .phone video{width:100%;height:100%;object-fit:cover;display:block;background:#101828;}
+  .phone-name{font-size:13px;font-weight:700;letter-spacing:-0.02em;}
+  @media (max-width:640px){
+    .phone{height:min(390px, 62vh);border-radius:18px;}
+    .film-track{gap:12px;}
+  }
+
+  .compare-grid{margin-top:44px;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line-on-white);border:1px solid var(--line-on-white);border-radius:22px;overflow:hidden;}
+  @media (max-width:820px){.compare-grid{grid-template-columns:1fr;}}
+  .compare-card{background:var(--white);padding:32px 28px;}
+  .compare-card .emoji{font-size:22px;}
+  .compare-card h3{margin-top:14px;font-size:18px;}
+  .compare-card p{margin-top:10px;font-size:14.5px;line-height:1.55;opacity:0.7;}
+
+  .method-grid{margin-top:48px;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line-on-white);border:1px solid var(--line-on-white);border-radius:22px;overflow:hidden;}
+  @media (max-width:900px){.method-grid{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:560px){.method-grid{grid-template-columns:1fr;}}
+  .method-card{background:var(--white);padding:26px 22px;}
+  .method-card .idx{font-weight:700;font-size:13px;opacity:0.5;}
+  .method-card h3{margin-top:10px;font-size:16.5px;}
+  .method-card p{margin-top:8px;font-size:13.5px;line-height:1.5;opacity:0.68;}
+
+  .case-wrap{position:relative;}
+  .case-cut-top{height:56px;background:var(--white);clip-path:polygon(0 0,100% 0,100% 100%,0 0);}
+  @media (max-width:640px){.case-cut-top{height:30px;}}
+  .case{background:var(--blue);color:var(--white);padding-top:36px;padding-bottom:28px;}
+  .case .film{margin-top:40px;}
+  .case .phone{background:rgba(255,255,255,0.08);}
+  .case .kicker{color:var(--white);opacity:0.7;}
+  .case-logo{display:block;height:46px;width:auto;max-width:240px;margin-top:18px;filter:brightness(0) invert(1);}
+  .case .section-lede{color:var(--white);opacity:0.85;}
+  .case-stats{margin-top:34px;display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:440px;}
+  .case-stat{border-top:1px solid var(--line-on-blue);padding-top:16px;}
+  .case-stat .num{font-weight:700;font-size:32px;letter-spacing:-0.03em;display:inline-block;}
+  .case-stat .num.in{animation:pop .55s cubic-bezier(.2,.8,.2,1);}
+  @keyframes pop{from{opacity:0;transform:translateY(8px) scale(.92);}to{opacity:1;transform:none;}}
+  .case-stat .label{margin-top:5px;font-size:13px;opacity:0.8;}
+  .case-cut-bottom{height:56px;background:var(--blue);clip-path:polygon(0 0,100% 0,100% 100%,0 100%);}
+  @media (max-width:640px){.case-cut-bottom{height:30px;}}
+
+  .faq-list{margin-top:44px;max-width:760px;}
+  details{border-top:1px solid var(--line-on-white);padding:20px 0;}
+  details:last-child{border-bottom:1px solid var(--line-on-white);}
+  summary{cursor:pointer;font-weight:600;font-size:16px;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:16px;}
+  summary::-webkit-details-marker{display:none;}
+  summary .plus{font-size:20px;font-weight:400;opacity:0.5;flex:none;transition:transform .2s;}
+  details[open] summary .plus{transform:rotate(45deg);}
+  details p{margin-top:12px;font-size:14.5px;line-height:1.6;opacity:0.72;max-width:64ch;}
+
+  .offer-card{
+    margin-top:44px;background:var(--tint);border:1px solid var(--line-on-white);
+    border-radius:24px;padding:40px;display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap;
+  }
+  .offer-card .txt h3{font-size:22px;}
+  .offer-card .txt p{margin-top:10px;font-size:14.5px;line-height:1.55;opacity:0.72;max-width:48ch;}
+  .offer-card .btn-primary,.book .btn-primary{background:var(--blue);color:var(--white);}
+  .book .btn-ghost{border-color:var(--blue);color:var(--blue);}
+  .book .btn-ghost:hover{background:var(--tint);}
+
+  .cta-band{background:var(--blue);color:var(--white);padding:96px 0 56px;}
+  .cta-band .intro{max-width:640px;margin:0 auto;text-align:center;}
+  .cta-band h2{color:var(--white);font-size:clamp(30px,4.4vw,46px);}
+  .book{
+    margin:36px auto 0;max-width:860px;background:#fff;color:var(--blue);
+    border-radius:28px;padding:28px;text-align:left;
+  }
+  .book-grid{display:grid;grid-template-columns:0.9fr 1.1fr;gap:28px;}
+  @media (max-width:800px){.book-grid{grid-template-columns:1fr;}}
+  .field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+  .field span{font-size:13px;font-weight:600;}
+  .field input{
+    border:1px solid var(--line-on-white);border-radius:12px;padding:12px 14px;
+    font-size:15px;color:var(--blue);background:#fff;outline:none;
+  }
+  .field input:focus{border-color:var(--blue);}
+  .tz-note{font-size:13px;opacity:0.7;line-height:1.45;margin-bottom:12px;}
+  .day-row,.slot-row{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{
+    border:1px solid var(--line-on-white);background:#fff;color:var(--blue);
+    border-radius:999px;padding:8px 12px;font-size:13px;font-weight:600;cursor:pointer;
+  }
+  .chip.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+  .chip:disabled{opacity:0.35;cursor:not-allowed;}
+  .slot-label{margin:16px 0 8px;font-size:13px;font-weight:600;}
+  .form-error{margin-top:12px;font-size:13.5px;color:#b42318;min-height:1.2em;}
+  .book-success{display:none;text-align:center;padding:28px 12px;}
+  .book-success h3{font-size:26px;}
+  .book-success p{margin-top:10px;opacity:0.75;line-height:1.5;}
+  .book.is-done form{display:none;}
+  .book.is-done .book-success{display:block;}
+  .footer-row{margin-top:48px;padding-top:26px;border-top:1px solid var(--line-on-blue);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:13px;opacity:0.7;}
+  .footer-row a{color:#fff;}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap">
+    <div class="logo">Delak</div>
+    <div class="nav-links">
+      <a href="#travail" data-fr="Le travail" data-en="The work">Le travail</a>
+      <a href="#suzuki" data-fr="Suzuki" data-en="Suzuki">Suzuki</a>
+      <a href="#faq" data-fr="FAQ" data-en="FAQ">FAQ</a>
+      <a class="nav-cta" href="#reserver" data-fr="Réserver un appel" data-en="Book a call">Réserver un appel</a>
+      <div class="lang-toggle">
+        <button id="btn-fr" class="active" type="button">FR</button>
+        <button id="btn-en" type="button">EN</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-inner on-white">
+      <span class="badge">🇹🇳 <span data-fr="Agence vidéo" data-en="Video agency">Agence vidéo</span></span>
+      <h1 data-fr="La vidéo, pensée comme un vrai levier de marque." data-en="Video, treated as a real brand lever.">La vidéo, pensée comme un vrai levier de marque.</h1>
+      <p class="hero-sub" data-fr="Delak accompagne les marques sur la conception et la production de leurs vidéos — TikTok, Instagram Reels — de la stratégie éditoriale jusqu'à l'analyse des performances." data-en="Delak supports brands on the design and production of their videos — TikTok, Instagram Reels — from editorial strategy through to performance analysis.">Delak accompagne les marques sur la conception et la production de leurs vidéos — TikTok, Instagram Reels — de la stratégie éditoriale jusqu'à l'analyse des performances.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#reserver" data-fr="Réserver un appel" data-en="Book a call">Réserver un appel</a>
+        <a class="btn btn-ghost" href="https://www.instagram.com/delakagency" target="_blank" rel="noopener" data-fr="Voir le travail" data-en="See the work">Voir le travail</a>
+      </div>
+      <div class="hero-fineprint">
+        <span data-fr="Sans engagement" data-en="No commitment">Sans engagement</span>
+        <span data-fr="Organique et sponsorisé" data-en="Organic and paid">Organique et sponsorisé</span>
+        <span data-fr="Plusieurs secteurs accompagnés" data-en="Several industries supported">Plusieurs secteurs accompagnés</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-cut"></div>
+</header>
+
+<section class="marquee-band" id="travail">
+  <div class="marquee-label" data-fr="Références" data-en="Clients">Références</div>
+  <div class="marquee-track" id="marquee-track"></div>
+</section>
+
+<section class="section-tight" id="galerie">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="kicker" data-fr="Réalisations" data-en="Work">Réalisations</p>
+      <h2 data-fr="Quelques exemples récents." data-en="A few recent examples.">Quelques exemples récents.</h2>
+    </div>
+  </div>
+  <div class="film" id="work-film">
+    <div class="film-track" id="work-track"></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="kicker" data-fr="Pourquoi Delak" data-en="Why Delak">Pourquoi Delak</p>
+      <h2 data-fr="Les limites des approches habituelles." data-en="The limits of the usual approaches.">Les limites des approches habituelles.</h2>
+    </div>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="emoji">💼</div>
+        <h3 data-fr="Vous passez par une grosse agence non spécialisée" data-en="You go through a large, non-specialized agency">Vous passez par une grosse agence non spécialisée</h3>
+        <p data-fr="Des délais souvent longs et des coûts élevés, pour des vidéos conçues autour d'un brief plus que des usages réels de la plateforme." data-en="Often long timelines and high costs, for videos built around a brief more than around how the platform is actually used.">Des délais souvent longs et des coûts élevés, pour des vidéos conçues autour d'un brief plus que des usages réels de la plateforme.</p>
+      </div>
+      <div class="compare-card">
+        <div class="emoji">✍️</div>
+        <h3 data-fr="Vous produisez en interne" data-en="You produce in-house">Vous produisez en interne</h3>
+        <p data-fr="Une contrainte de temps et de ressources créatives, et peu de visibilité sur ce qui fonctionne en dehors de votre propre compte." data-en="Time and creative-resource constraints, with little visibility into what works beyond your own account.">Une contrainte de temps et de ressources créatives, et peu de visibilité sur ce qui fonctionne en dehors de votre propre compte.</p>
+      </div>
+      <div class="compare-card">
+        <div class="emoji">🤳</div>
+        <h3 data-fr="Vous passez par des créateurs UGC" data-en="You go through UGC creators">Vous passez par des créateurs UGC</h3>
+        <p data-fr="Un format unique, dépendant d'un seul profil, difficile à inscrire dans une ligne éditoriale cohérente." data-en="A single format, dependent on one profile, hard to fit into a coherent editorial line.">Un format unique, dépendant d'un seul profil, difficile à inscrire dans une ligne éditoriale cohérente.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="case-wrap" id="suzuki">
+  <div class="case-cut-top"></div>
+  <section class="case">
+    <div class="wrap">
+      <div>
+          <p class="kicker" data-fr="Étude de cas" data-en="Case study">Étude de cas</p>
+          <img class="case-logo" src="assets/logos/suzuki.svg" alt="Suzuki">
+          <p class="section-lede" data-fr="Suzuki souhaitait renforcer sa présence sur les réseaux sociaux. Delak a accompagné la marque sur la stratégie vidéo, la production et le suivi des performances dans la durée — jusqu'à en faire la première marque automobile sur les réseaux sociaux à l'échelle nationale." data-en="Suzuki wanted to strengthen its social media presence. Delak supported the brand on video strategy, production and long-term performance tracking — making it the leading automotive brand on social media nationally.">Suzuki souhaitait renforcer sa présence sur les réseaux sociaux. Delak a accompagné la marque sur la stratégie vidéo, la production et le suivi des performances dans la durée — jusqu'à en faire la première marque automobile sur les réseaux sociaux à l'échelle nationale.</p>
+          <div class="case-stats" id="case-stats">
+            <div class="case-stat">
+              <div class="num" data-count="20" data-suffix="M+">0</div>
+              <div class="label" data-fr="vues organiques (total)" data-en="total organic views">vues organiques (total)</div>
+            </div>
+            <div class="case-stat">
+              <div class="num" data-count="2.4" data-decimals="1" data-suffix="M">0</div>
+              <div class="label" data-fr="sur une vidéo" data-en="on one video">sur une vidéo</div>
+            </div>
+            <div class="case-stat">
+              <div class="num" data-pop="1" data-fr="N°1" data-en="#1">N°1</div>
+              <div class="label" data-fr="marque automobile sur les réseaux, au niveau national" data-en="automotive brand on social, nationally">marque automobile sur les réseaux, au niveau national</div>
+            </div>
+            <div class="case-stat">
+              <div class="num" data-pop="1">0€</div>
+              <div class="label" data-fr="de budget publicitaire" data-en="in ad spend">de budget publicitaire</div>
+            </div>
+          </div>
+      </div>
+    </div>
+    <div class="film" id="suzuki-film">
+      <div class="film-track" id="suzuki-track"></div>
+    </div>
+  </section>
+  <div class="case-cut-bottom"></div>
+</div>
+
+<section class="section" id="methode">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="kicker" data-fr="Méthode" data-en="Method">Méthode</p>
+      <h2 data-fr="Un accompagnement de bout en bout." data-en="End-to-end support.">Un accompagnement de bout en bout.</h2>
+    </div>
+    <div class="method-grid">
+      <div class="method-card"><div class="idx">01</div><h3 data-fr="Stratégie" data-en="Strategy">Stratégie</h3><p data-fr="Nous définissons ensemble les angles et les formats à produire, selon votre marque et votre audience." data-en="We define together the angles and formats to produce, based on your brand and audience.">Nous définissons ensemble les angles et les formats à produire, selon votre marque et votre audience.</p></div>
+      <div class="method-card"><div class="idx">02</div><h3 data-fr="Concepts & scripts" data-en="Concepts & scripts">Concepts & scripts</h3><p data-fr="Nous proposons des concepts et rédigeons les scripts ; vous validez les directions retenues." data-en="We propose concepts and write the scripts; you validate the directions chosen.">Nous proposons des concepts et rédigeons les scripts ; vous validez les directions retenues.</p></div>
+      <div class="method-card"><div class="idx">03</div><h3 data-fr="Tournage" data-en="Shooting">Tournage</h3><p data-fr="Nous prenons en charge l'organisation du tournage, du matériel aux intervenants." data-en="We handle the organization of the shoot, from equipment to talent.">Nous prenons en charge l'organisation du tournage, du matériel aux intervenants.</p></div>
+      <div class="method-card"><div class="idx">04</div><h3 data-fr="Montage & livraison" data-en="Editing & delivery">Montage & livraison</h3><p data-fr="Montage complet puis livraison, avec les ajustements nécessaires." data-en="Full editing, then delivery, with any necessary adjustments.">Montage complet puis livraison, avec les ajustements nécessaires.</p></div>
+      <div class="method-card"><div class="idx">05</div><h3 data-fr="Publication" data-en="Publishing">Publication</h3><p data-fr="Nous accompagnons la mise en ligne au rythme défini avec vous." data-en="We support publishing at the pace defined with you.">Nous accompagnons la mise en ligne au rythme défini avec vous.</p></div>
+      <div class="method-card"><div class="idx">06</div><h3 data-fr="Analyse" data-en="Analysis">Analyse</h3><p data-fr="Nous analysons les performances afin d'orienter les contenus suivants." data-en="We analyze performance to guide the next round of content.">Nous analysons les performances afin d'orienter les contenus suivants.</p></div>
+      <div class="method-card"><div class="idx">07</div><h3 data-fr="Itération" data-en="Iteration">Itération</h3><p data-fr="Chaque cycle nourrit le suivant : la ligne éditoriale s'affine avec les résultats observés." data-en="Each cycle feeds the next: the editorial line sharpens with observed results.">Chaque cycle nourrit le suivant : la ligne éditoriale s'affine avec les résultats observés.</p></div>
+      <div class="method-card"><div class="idx">08</div><h3 data-fr="Suivi continu" data-en="Ongoing follow-up">Suivi continu</h3><p data-fr="Des points réguliers pour rester alignés sur vos objectifs." data-en="Regular check-ins to stay aligned with your goals.">Des points réguliers pour rester alignés sur vos objectifs.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="offre">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="kicker" data-fr="Nos formules" data-en="Our packages">Nos formules</p>
+      <h2 data-fr="Un accompagnement adapté à vos besoins." data-en="Support tailored to your needs.">Un accompagnement adapté à vos besoins.</h2>
+    </div>
+    <div class="offer-card">
+      <div class="txt">
+        <h3 data-fr="Sur devis, selon le volume et le rythme" data-en="Custom quote, based on volume and pace">Sur devis, selon le volume et le rythme</h3>
+        <p data-fr="Le volume et le rythme de publication déterminent le tarif. Nous l'établissons ensemble lors du premier échange." data-en="Volume and publishing pace determine the rate. We establish it together during the first conversation.">Le volume et le rythme de publication déterminent le tarif. Nous l'établissons ensemble lors du premier échange.</p>
+      </div>
+      <a class="btn btn-primary on-white" href="#reserver" data-fr="Demander un devis" data-en="Request a quote">Demander un devis</a>
+    </div>
+  </div>
+</section>
+
+<section class="section-tight" id="faq">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="kicker" data-fr="Questions fréquentes" data-en="Frequently asked questions">Questions fréquentes</p>
+      <h2 data-fr="Vos questions, nos réponses." data-en="Your questions, our answers.">Vos questions, nos réponses.</h2>
+    </div>
+    <div class="faq-list">
+      <details>
+        <summary><span data-fr="Comment savoir si ça va marcher pour ma marque ?" data-en="How do I know it will work for my brand?">Comment savoir si ça va marcher pour ma marque ?</span><span class="plus">+</span></summary>
+        <p data-fr="Notre expérience sur plusieurs secteurs nous permet d'adapter l'angle à votre contexte, plutôt que d'appliquer une approche unique." data-en="Our experience across several industries lets us adapt the angle to your context, rather than applying a single approach.">Notre expérience sur plusieurs secteurs nous permet d'adapter l'angle à votre contexte, plutôt que d'appliquer une approche unique.</p>
+      </details>
+      <details>
+        <summary><span data-fr="Quelle est la différence avec une agence classique ?" data-en="What's the difference from a traditional agency?">Quelle est la différence avec une agence classique ?</span><span class="plus">+</span></summary>
+        <p data-fr="Delak est spécialisée dans la vidéo, avec une équipe qui prend en charge la production de bout en bout, et pas uniquement la stratégie." data-en="Delak specializes in video, with a team that handles production end-to-end, not strategy alone.">Delak est spécialisée dans la vidéo, avec une équipe qui prend en charge la production de bout en bout, et pas uniquement la stratégie.</p>
+      </details>
+      <details>
+        <summary><span data-fr="Combien de temps pour recevoir les vidéos ?" data-en="How long until I receive the videos?">Combien de temps pour recevoir les vidéos ?</span><span class="plus">+</span></summary>
+        <p data-fr="Cela dépend du projet. Un calendrier précis est défini ensemble dès le brief initial." data-en="It depends on the project. A precise timeline is defined together from the initial brief.">Cela dépend du projet. Un calendrier précis est défini ensemble dès le brief initial.</p>
+      </details>
+      <details>
+        <summary><span data-fr="Sur quels types de marques intervenez-vous ?" data-en="What kinds of brands do you work with?">Sur quels types de marques intervenez-vous ?</span><span class="plus">+</span></summary>
+        <p data-fr="Nos références couvrent plusieurs secteurs : automobile, restauration, mobilité, retail. L'étude de cas Suzuki, plus haut sur cette page, donne un exemple détaillé d'accompagnement." data-en="Our references span several sectors: automotive, food service, mobility, retail. The Suzuki case study above gives a detailed example of an engagement.">Nos références couvrent plusieurs secteurs : automobile, restauration, mobilité, retail. L'étude de cas Suzuki, plus haut sur cette page, donne un exemple détaillé d'accompagnement.</p>
+      </details>
+      <details>
+        <summary><span data-fr="Comment se déroule la collaboration ?" data-en="How does the collaboration work?">Comment se déroule la collaboration ?</span><span class="plus">+</span></summary>
+        <p data-fr="Un premier échange pour comprendre vos objectifs, puis une proposition de concepts, leur validation, le tournage, le montage et la livraison — avec des points réguliers pour ajuster selon les résultats." data-en="A first conversation to understand your goals, then a concept proposal, validation, shoot, edit and delivery — with regular check-ins to adjust based on results.">Un premier échange pour comprendre vos objectifs, puis une proposition de concepts, leur validation, le tournage, le montage et la livraison — avec des points réguliers pour ajuster selon les résultats.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="cta-band" id="reserver">
+  <div class="wrap on-blue">
+    <div class="intro">
+      <p class="kicker" style="color:#fff;opacity:0.75;" data-fr="Réservez un appel" data-en="Book a call">Réservez un appel</p>
+      <h2 data-fr="Discutons de votre marque." data-en="Let's talk about your brand.">Discutons de votre marque.</h2>
+      <p class="section-lede" style="margin-top:14px;opacity:0.85;color:#fff;" data-fr="Un échange de 30 minutes, sans engagement, pour comprendre vos enjeux et voir ce que nous pouvons apporter." data-en="A 30-minute conversation, no commitment, to understand your challenges and see what we can bring.">Un échange de 30 minutes, sans engagement, pour comprendre vos enjeux et voir ce que nous pouvons apporter.</p>
+    </div>
+
+    <div class="book" id="book">
+      <form id="book-form">
+        <div class="book-grid">
+          <div>
+            <label class="field"><span data-fr="Nom" data-en="Name">Nom</span><input name="name" required autocomplete="name"></label>
+            <label class="field"><span data-fr="Email" data-en="Email">Email</span><input name="email" type="email" required autocomplete="email"></label>
+            <label class="field"><span data-fr="Téléphone" data-en="Phone">Téléphone</span><input name="phone" type="tel" required autocomplete="tel"></label>
+            <label class="field"><span data-fr="Entreprise" data-en="Company">Entreprise</span><input name="company" required autocomplete="organization"></label>
+          </div>
+          <div>
+            <p class="tz-note" id="tz-note"></p>
+            <div class="day-row" id="day-row"></div>
+            <p class="slot-label" data-fr="Créneau de 30 minutes" data-en="30-minute slot">Créneau de 30 minutes</p>
+            <div class="slot-row" id="slot-row"></div>
+          </div>
+        </div>
+        <div class="hero-actions" style="justify-content:flex-start;">
+          <button class="btn btn-primary on-white" type="submit" data-fr="Confirmer l'appel" data-en="Confirm the call">Confirmer l'appel</button>
+          <a class="btn btn-ghost on-white" href="https://www.instagram.com/delakagency" target="_blank" rel="noopener" data-fr="Écrire en DM sur Instagram" data-en="DM us on Instagram">Écrire en DM sur Instagram</a>
+        </div>
+        <p class="form-error" id="form-error" role="alert"></p>
+      </form>
+      <div class="book-success">
+        <h3 data-fr="C'est réservé." data-en="You're booked.">C'est réservé.</h3>
+        <p id="success-copy" data-fr="Un email de confirmation vient de partir. On se parle très vite." data-en="A confirmation email is on its way. Talk soon.">Un email de confirmation vient de partir. On se parle très vite.</p>
+      </div>
+    </div>
+
+    <div class="footer-row">
+      <span data-fr="© 2026 Delak — La vidéo pour les marques." data-en="© 2026 Delak — Video for brands.">© 2026 Delak — La vidéo pour les marques.</span>
+      <span><a href="https://www.instagram.com/delakagency" target="_blank" rel="noopener">Instagram</a></span>
+    </div>
+  </div>
+</section>
+
+<script>
+(function () {
+  var lang = "fr";
+  var titles = { fr: "Delak — La vidéo pour les marques", en: "Delak — Video for brands" };
+  var clients = [
+    { name: "Suzuki", src: "assets/logos/suzuki.svg" },
+    { name: "Volvo", src: "assets/logos/volvo.png" },
+    { name: "Papa John's", src: "assets/logos/papajohns.png" },
+    { name: "Chili's", src: "assets/logos/chilis.png" },
+    { name: "Yassir", src: "assets/logos/yassir.svg" },
+    { name: "Baguette & Baguette", src: "assets/logos/baguette.png" },
+    { name: "HOBO", src: "assets/logos/hobo.png" },
+    { name: "Pépé", src: "assets/logos/pepe.jpg" },
+    { name: "Tacoth", src: "assets/logos/tacoth.png" },
+    { name: "Salad Poke", src: "assets/logos/saladpoke.png" }
+  ];
+  var works = [
+    { name: "Suzuki", src: "assets/videos/DXpbTduAGNt.mp4" },
+    { name: "Papa John's", src: "assets/videos/DYzJ6fXtuLc.mp4" },
+    { name: "Baguette & Baguette", src: "assets/videos/DNIOJiwMPo_.mp4" },
+    { name: "SupplyzPro", src: "assets/videos/DSu_rCVEooG.mp4" },
+    { name: "HOBO", src: "assets/videos/DUklUmUjGWM.mp4" },
+    { name: "Pépé", src: "assets/videos/7677162685905046802.mp4" },
+    { name: "Volvo", src: "assets/videos/DKPduInosDV.mp4" },
+    { name: "Hachicha", src: "assets/videos/DTxbDXYDLej.mp4" }
+  ];
+  var suzukiReels = [
+    "assets/videos/DcLEqDNAKvW.mp4",
+    "assets/videos/DYUutpkiBmh.mp4",
+    "assets/videos/DUXqHMwAP2w.mp4",
+    "assets/videos/DPizcYYEpz1.mp4",
+    "assets/videos/DPQwhmyAhl-.mp4",
+    "assets/videos/DOD6U-fAoqX.mp4",
+    "assets/videos/DW9CiUegki7.mp4",
+    "assets/videos/DXpbTduAGNt.mp4"
+  ];
+
+  function setLang(next) {
+    lang = next;
+    document.querySelectorAll("[data-fr]").forEach(function (el) {
+      var val = el.getAttribute("data-" + lang);
+      if (val !== null && el.tagName !== "INPUT") el.textContent = val;
+    });
+    document.getElementById("btn-fr").classList.toggle("active", lang === "fr");
+    document.getElementById("btn-en").classList.toggle("active", lang === "en");
+    document.documentElement.lang = lang;
+    document.title = titles[lang];
+    renderBooking();
+  }
+  document.getElementById("btn-fr").onclick = function () { setLang("fr"); };
+  document.getElementById("btn-en").onclick = function () { setLang("en"); };
+
+  var track = document.getElementById("marquee-track");
+  clients.concat(clients).forEach(function (c) {
+    var item = document.createElement("div");
+    item.className = "marquee-item";
+    var img = document.createElement("img");
+    img.src = c.src;
+    img.alt = c.name;
+    if (c.wide) img.className = "logo-wide";
+    item.appendChild(img);
+    track.appendChild(item);
+  });
+
+  function makeVideo(src) {
+    var video = document.createElement("video");
+    video.src = src;
+    video.muted = true;
+    video.defaultMuted = true;
+    video.loop = true;
+    video.autoplay = true;
+    video.playsInline = true;
+    video.setAttribute("muted", "");
+    video.setAttribute("playsinline", "");
+    video.preload = "metadata";
+    return video;
+  }
+  function mountFilm(track, items) {
+    items.concat(items).forEach(function (item) {
+      var wrap = document.createElement("div");
+      wrap.className = "phone-item";
+      var phone = document.createElement("div");
+      phone.className = "phone";
+      phone.appendChild(makeVideo(item.src));
+      wrap.appendChild(phone);
+      if (item.name) {
+        var name = document.createElement("div");
+        name.className = "phone-name";
+        name.textContent = item.name;
+        wrap.appendChild(name);
+      }
+      track.appendChild(wrap);
+    });
+    track.style.setProperty("--dur", (items.length * 7) + "s");
+  }
+  function armPlayback(root) {
+    var videos = root.querySelectorAll("video");
+    if (!("IntersectionObserver" in window)) {
+      videos.forEach(function (video) { video.play().catch(function () {}); });
+      return;
+    }
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        var video = entry.target;
+        if (entry.isIntersecting) video.play().catch(function () {});
+        else video.pause();
+      });
+    }, { rootMargin: "240px", threshold: 0.15 });
+    videos.forEach(function (video) { observer.observe(video); });
+  }
+  mountFilm(document.getElementById("work-track"), works);
+  mountFilm(document.getElementById("suzuki-track"), suzukiReels.map(function (src) { return { src: src }; }));
+  armPlayback(document);
+
+  var statsDone = false;
+  function runStats() {
+    if (statsDone) return;
+    statsDone = true;
+    document.querySelectorAll("#case-stats .num").forEach(function (el) {
+      el.classList.add("in");
+      if (el.dataset.pop) return;
+      var target = parseFloat(el.dataset.count);
+      var decimals = parseInt(el.dataset.decimals || "0", 10);
+      var suffix = el.dataset.suffix || "";
+      var start = Date.now();
+      function paint(t) {
+        var eased = 1 - Math.pow(1 - t, 3);
+        var value = target * eased;
+        var text = decimals ? value.toFixed(decimals).replace(".", lang === "fr" ? "," : ".") : String(Math.round(value));
+        el.textContent = text + suffix;
+      }
+      var timer = setInterval(function () {
+        var t = Math.min(1, (Date.now() - start) / 900);
+        paint(t);
+        if (t >= 1) clearInterval(timer);
+      }, 16);
+      setTimeout(function () { clearInterval(timer); paint(1); }, 950);
+    });
+  }
+  if ("IntersectionObserver" in window) {
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) { if (entry.isIntersecting) runStats(); });
+    }, { threshold: 0.35 });
+    obs.observe(document.getElementById("case-stats"));
+  } else runStats();
+
+  var TUNIS = "Africa/Tunis";
+  var visitorTZ = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+  var selectedDay = null;
+  var selectedSlot = null;
+
+  function zoneParts(date, timeZone) {
+    var map = {};
+    new Intl.DateTimeFormat("en-US", {
+      timeZone: timeZone, year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", weekday: "short", hourCycle: "h23"
+    }).formatToParts(date).forEach(function (p) { if (p.type !== "literal") map[p.type] = p.value; });
+    return map;
+  }
+  function zonedToUtc(timeZone, y, mo, d, h, mi) {
+    var utc = Date.UTC(y, mo - 1, d, h, mi);
+    for (var i = 0; i < 4; i++) {
+      var p = zoneParts(new Date(utc), timeZone);
+      var asUtc = Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute);
+      var target = Date.UTC(y, mo - 1, d, h, mi);
+      if (asUtc === target) break;
+      utc += target - asUtc;
+    }
+    return new Date(utc);
+  }
+  function businessDays() {
+    var today = zoneParts(new Date(), TUNIS);
+    var days = [];
+    var cursor = new Date(Date.UTC(+today.year, +today.month - 1, +today.day + 1));
+    while (days.length < 8) {
+      var wd = cursor.getUTCDay();
+      if (wd !== 0 && wd !== 6) {
+        days.push({ y: cursor.getUTCFullYear(), m: cursor.getUTCMonth() + 1, d: cursor.getUTCDate() });
+      }
+      cursor.setUTCDate(cursor.getUTCDate() + 1);
+    }
+    return days;
+  }
+  function slotsFor(day) {
+    var out = [];
+    [14, 15, 16, 17].forEach(function (hour) {
+      [0, 30].forEach(function (minute) {
+        out.push(zonedToUtc(TUNIS, day.y, day.m, day.d, hour, minute));
+      });
+    });
+    return out;
+  }
+  function fmtDay(date) {
+    return new Intl.DateTimeFormat(lang === "en" ? "en-GB" : "fr-FR", {
+      timeZone: visitorTZ, weekday: "short", day: "numeric", month: "short"
+    }).format(date);
+  }
+  function fmtTime(date) {
+    return new Intl.DateTimeFormat(lang === "en" ? "en-GB" : "fr-FR", {
+      timeZone: visitorTZ, hour: "2-digit", minute: "2-digit", hourCycle: "h23"
+    }).format(date);
+  }
+  function dayKey(date) {
+    var p = zoneParts(date, visitorTZ);
+    return p.year + "-" + p.month + "-" + p.day;
+  }
+  function zoneLabel() {
+    var name = new Intl.DateTimeFormat("en-US", {
+      timeZone: visitorTZ, timeZoneName: "short"
+    }).formatToParts(new Date()).find(function (p) { return p.type === "timeZoneName"; });
+    return name ? name.value : visitorTZ;
+  }
+  function renderBooking() {
+    var note = document.getElementById("tz-note");
+    note.textContent = lang === "en"
+      ? "Times are shown in your timezone (" + zoneLabel() + ")."
+      : "Les horaires sont affichés sur votre fuseau (" + zoneLabel() + ").";
+    var days = businessDays();
+    if (!selectedDay) selectedDay = days[0].y + "-" + days[0].m + "-" + days[0].d;
+    var dayRow = document.getElementById("day-row");
+    dayRow.innerHTML = "";
+    days.forEach(function (day) {
+      var first = slotsFor(day)[0];
+      var key = day.y + "-" + day.m + "-" + day.d;
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "chip" + (key === selectedDay ? " active" : "");
+      btn.textContent = fmtDay(first);
+      btn.onclick = function () { selectedDay = key; selectedSlot = null; renderBooking(); };
+      dayRow.appendChild(btn);
+    });
+    var current = days.find(function (day) { return (day.y + "-" + day.m + "-" + day.d) === selectedDay; }) || days[0];
+    var slotRow = document.getElementById("slot-row");
+    slotRow.innerHTML = "";
+    slotsFor(current).forEach(function (slot) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "chip" + (selectedSlot === slot.toISOString() ? " active" : "");
+      var end = new Date(slot.getTime() + 30 * 60 * 1000);
+      btn.textContent = fmtTime(slot) + " – " + fmtTime(end);
+      btn.onclick = function () { selectedSlot = slot.toISOString(); renderBooking(); };
+      slotRow.appendChild(btn);
+    });
+  }
+
+  var messages = {
+    fr: {
+      slot: "Choisissez un créneau.",
+      fields: "Merci de remplir nom, email, téléphone et entreprise.",
+      taken: "Ce créneau vient d'être pris. Choisissez-en un autre.",
+      mail: "La réservation n'a pas pu être envoyée. Écrivez-nous sur Instagram.",
+      send: "L'envoi de la confirmation a échoué. Réessayez, ou écrivez-nous sur Instagram.",
+      rate: "Trop de tentatives. Réessayez dans un moment.",
+      invalid: "La réservation n'a pas pu être envoyée."
+    },
+    en: {
+      slot: "Pick a time slot.",
+      fields: "Please add your name, email, phone and company.",
+      taken: "That slot was just taken. Pick another one.",
+      mail: "The booking could not be sent. Message us on Instagram.",
+      send: "The confirmation email failed. Try again, or message us on Instagram.",
+      rate: "Too many attempts. Try again in a little while.",
+      invalid: "The booking could not be sent."
+    }
+  };
+
+  document.getElementById("book-form").addEventListener("submit", function (event) {
+    event.preventDefault();
+    var error = document.getElementById("form-error");
+    error.textContent = "";
+    if (!selectedSlot) { error.textContent = messages[lang].slot; return; }
+    var data = new FormData(event.target);
+    var body = {
+      name: data.get("name"),
+      email: data.get("email"),
+      phone: data.get("phone"),
+      company: data.get("company"),
+      slotUtc: selectedSlot,
+      visitorTimeZone: visitorTZ,
+      lang: lang
+    };
+    var button = event.target.querySelector("button[type=submit]");
+    button.disabled = true;
+    fetch("/api/book", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    }).then(function (res) { return res.json().then(function (payload) { return { ok: res.ok, payload: payload }; }); })
+      .then(function (result) {
+        if (result.ok && result.payload.ok) {
+          document.getElementById("book").classList.add("is-done");
+          return;
+        }
+        var code = (result.payload && result.payload.error) || "invalid";
+        error.textContent = messages[lang][code] || messages[lang].invalid;
+      })
+      .catch(function () { error.textContent = messages[lang].invalid; })
+      .finally(function () { button.disabled = false; });
+  });
+
+  renderBooking();
+  window.__delakPause = function () { clearInterval(reelTimer); };
+})();
+</script>
+</body>
+</html>
