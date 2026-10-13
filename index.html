@@ -90,13 +90,18 @@
   .film-track:hover{animation-play-state:paused;}
   .phone-item{flex:none;display:flex;flex-direction:column;align-items:center;gap:10px;}
   .phone{
-    position:relative;flex:none;height:min(440px, 54vh);aspect-ratio:9/16;width:auto;
+    position:relative;flex:none;
+    height:min(440px, 54vh);width:calc(min(440px, 54vh) * 9 / 16);
     border-radius:22px;overflow:hidden;background:#101828;
+    transform:translateZ(0);-webkit-transform:translateZ(0);
   }
-  .phone video{width:100%;height:100%;object-fit:cover;display:block;background:#101828;}
+  .phone video{
+    position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:#101828;
+    transform:translate3d(0,0,0);-webkit-transform:translate3d(0,0,0);
+  }
   .phone-name{font-size:13px;font-weight:700;letter-spacing:-0.02em;}
   @media (max-width:640px){
-    .phone{height:min(390px, 62vh);border-radius:18px;}
+    .phone{height:min(390px, 62vh);width:calc(min(390px, 62vh) * 9 / 16);border-radius:18px;}
     .film-track{gap:12px;}
   }
 
@@ -478,15 +483,15 @@
 
   function makeVideo(src) {
     var video = document.createElement("video");
-    video.src = src;
     video.muted = true;
     video.defaultMuted = true;
     video.loop = true;
-    video.autoplay = true;
     video.playsInline = true;
     video.setAttribute("muted", "");
     video.setAttribute("playsinline", "");
+    video.setAttribute("webkit-playsinline", "");
     video.preload = "metadata";
+    video.src = src;
     return video;
   }
   function mountFilm(track, items) {
