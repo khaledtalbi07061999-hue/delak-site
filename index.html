@@ -587,27 +587,59 @@
     }
     return new Date(utc);
   }
+  var SLOT_POOL = [[14, 0], [14, 30], [15, 0], [15, 30], [16, 0], [16, 30], [17, 0], [17, 30]];
+  function mix(n) {
+    n = Math.imul(n ^ (n >>> 16), 0x7feb352d);
+    n = Math.imul(n ^ (n >>> 15), 0x846ca68b);
+    return (n ^ (n >>> 16)) >>> 0;
+  }
+  function openingsOn(y, m, d) {
+    var seed = mix(y * 10000 + m * 100 + d);
+    var roll = seed % 11;
+    if (roll < 3) return [];
+    var i = (seed >>> 5) % SLOT_POOL.length;
+    if (roll < 8) return [[SLOT_POOL[i][0], SLOT_POOL[i][1]]];
+    var j = (seed >>> 11) % SLOT_POOL.length;
+    if (Math.abs(j - i) < 3) j = (i + 3 + ((seed >>> 17) % 3)) % SLOT_POOL.length;
+    return [[SLOT_POOL[i][0], SLOT_POOL[i][1]], [SLOT_POOL[j][0], SLOT_POOL[j][1]]]
+      .sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; });
+  }
+  function sameClock(a, b) { return a[0] === b[0] && a[1] === b[1]; }
+  function shiftClock(clock) {
+    var i = 0;
+    for (; i < SLOT_POOL.length; i++) if (sameClock(SLOT_POOL[i], clock)) break;
+    var next = SLOT_POOL[(i + 3) % SLOT_POOL.length];
+    return [next[0], next[1]];
+  }
   function businessDays() {
     var today = zoneParts(new Date(), TUNIS);
+    var start = new Date(Date.UTC(+today.year, +today.month - 1, +today.day));
     var days = [];
-    var cursor = new Date(Date.UTC(+today.year, +today.month - 1, +today.day + 1));
-    while (days.length < 8) {
-      var wd = cursor.getUTCDay();
-      if (wd !== 0 && wd !== 6) {
-        days.push({ y: cursor.getUTCFullYear(), m: cursor.getUTCMonth() + 1, d: cursor.getUTCDate() });
+    var previous = null;
+    for (var n = 1; n <= 28 && days.length < 5; n++) {
+      var dt = new Date(start.getTime());
+      dt.setUTCDate(start.getUTCDate() + n);
+      if (dt.getUTCDay() === 0 || dt.getUTCDay() === 6) continue;
+      var y = dt.getUTCFullYear();
+      var m = dt.getUTCMonth() + 1;
+      var d = dt.getUTCDate();
+      var slots = openingsOn(y, m, d);
+      if (slots.length === 1 && previous && sameClock(slots[0], previous)) slots = [shiftClock(slots[0])];
+      if (slots.length === 2 && previous && sameClock(slots[0], previous)) {
+        var moved = shiftClock(slots[0]);
+        if (!sameClock(moved, slots[1])) slots[0] = moved;
+        slots.sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; });
       }
-      cursor.setUTCDate(cursor.getUTCDate() + 1);
+      if (!slots.length) continue;
+      previous = slots[0];
+      days.push({ y: y, m: m, d: d, slots: slots });
     }
     return days;
   }
   function slotsFor(day) {
-    var out = [];
-    [14, 15, 16, 17].forEach(function (hour) {
-      [0, 30].forEach(function (minute) {
-        out.push(zonedToUtc(TUNIS, day.y, day.m, day.d, hour, minute));
-      });
+    return day.slots.map(function (slot) {
+      return zonedToUtc(TUNIS, day.y, day.m, day.d, slot[0], slot[1]);
     });
-    return out;
   }
   function fmtDay(date) {
     return new Intl.DateTimeFormat(lang === "en" ? "en-GB" : "fr-FR", {

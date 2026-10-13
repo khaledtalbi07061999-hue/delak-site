@@ -10,8 +10,7 @@ const DATA = path.join(ROOT, "data");
 const BOOKINGS = path.join(DATA, "bookings.json");
 const PORT = Number(process.env.PORT || 4173);
 const TUNIS = "Africa/Tunis";
-const SLOT_HOURS = [14, 15, 16, 17];
-const SLOT_MINUTES = [0, 30];
+const SLOT_POOL = [[14, 0], [14, 30], [15, 0], [15, 30], [16, 0], [16, 30], [17, 0], [17, 30]];
 const hits = new Map();
 
 async function loadEnvFile() {
@@ -98,19 +97,69 @@ function partsInZone(date, timeZone) {
   return map;
 }
 
+function mix(n) {
+  n = Math.imul(n ^ (n >>> 16), 0x7feb352d);
+  n = Math.imul(n ^ (n >>> 15), 0x846ca68b);
+  return (n ^ (n >>> 16)) >>> 0;
+}
+
+function openingsOn(y, m, d) {
+  const seed = mix(y * 10000 + m * 100 + d);
+  const roll = seed % 11;
+  if (roll < 3) return [];
+  const i = (seed >>> 5) % SLOT_POOL.length;
+  if (roll < 8) return [[SLOT_POOL[i][0], SLOT_POOL[i][1]]];
+  let j = (seed >>> 11) % SLOT_POOL.length;
+  if (Math.abs(j - i) < 3) j = (i + 3 + ((seed >>> 17) % 3)) % SLOT_POOL.length;
+  return [[SLOT_POOL[i][0], SLOT_POOL[i][1]], [SLOT_POOL[j][0], SLOT_POOL[j][1]]]
+    .sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+}
+
+function sameClock(a, b) {
+  return a[0] === b[0] && a[1] === b[1];
+}
+
+function shiftClock(clock) {
+  const i = SLOT_POOL.findIndex((item) => sameClock(item, clock));
+  return [SLOT_POOL[(i + 3) % SLOT_POOL.length][0], SLOT_POOL[(i + 3) % SLOT_POOL.length][1]];
+}
+
+function offeredDays(now = new Date()) {
+  const today = partsInZone(now, TUNIS);
+  const start = new Date(Date.UTC(+today.year, +today.month - 1, +today.day));
+  const days = [];
+  let previous = null;
+  for (let n = 1; n <= 28 && days.length < 5; n++) {
+    const dt = new Date(start.getTime());
+    dt.setUTCDate(start.getUTCDate() + n);
+    const wd = dt.getUTCDay();
+    if (wd === 0 || wd === 6) continue;
+    const y = dt.getUTCFullYear();
+    const m = dt.getUTCMonth() + 1;
+    const d = dt.getUTCDate();
+    let slots = openingsOn(y, m, d);
+    if (slots.length === 1 && previous && sameClock(slots[0], previous)) slots = [shiftClock(slots[0])];
+    if (slots.length === 2 && previous && sameClock(slots[0], previous)) {
+      const moved = shiftClock(slots[0]);
+      if (!sameClock(moved, slots[1])) slots[0] = moved;
+      slots.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    }
+    if (!slots.length) continue;
+    previous = slots[0];
+    days.push({ y, m, d, slots });
+  }
+  return days;
+}
+
 function isAllowedSlot(date) {
   if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
   const p = partsInZone(date, TUNIS);
   const hour = Number(p.hour);
   const minute = Number(p.minute);
-  if (!SLOT_HOURS.includes(hour) || !SLOT_MINUTES.includes(minute)) return false;
-  const wd = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(p.weekday);
-  if (wd === 0 || wd === 6) return false;
-  const today = partsInZone(new Date(), TUNIS);
-  const slotDay = Date.UTC(+p.year, +p.month - 1, +p.day);
-  const minDay = Date.UTC(+today.year, +today.month - 1, +today.day + 1);
-  const maxDay = Date.UTC(+today.year, +today.month - 1, +today.day + 21);
-  return slotDay >= minDay && slotDay <= maxDay;
+  return offeredDays().some((day) => (
+    day.y === Number(p.year) && day.m === Number(p.month) && day.d === Number(p.day)
+    && day.slots.some((slot) => slot[0] === hour && slot[1] === minute)
+  ));
 }
 
 function formatWhen(date, timeZone, lang) {
